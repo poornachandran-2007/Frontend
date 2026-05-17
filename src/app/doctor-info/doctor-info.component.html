@@ -1,0 +1,70 @@
+<div class="doctor-info-container">
+  <div class="header-actions">
+    <h2 class="shining-title">Doctor Information</h2>
+    <button class="btn-add-main" (click)="openModal('add')">+ Add New Doctor</button>
+  </div>
+  
+  <div *ngIf="loading" class="status-message">Loading doctor data...</div>
+  <div *ngIf="error" class="status-message error-message">{{ error }}</div>
+
+  <div class="search-container" *ngIf="!loading && !error">
+    <input class="glow-input search-bar" type="text" [(ngModel)]="searchQuery" (input)="fetchDoctors()" placeholder="Search by name...">
+  </div>
+
+  <div class="table-wrapper" *ngIf="!loading && !error">
+    <table class="shining-table">
+      <thead>
+        <tr>
+          <th>Doctor Name</th>
+          <th>Hospital Name</th>
+          <th>Hospital Address</th>
+          <th>Edit/Delete Doctor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of doctors">
+          <td>{{ d.doctor_name }}</td>
+          <td>{{ d.hospital_name }}</td>
+          <td>{{ d.hospital_address }}</td>
+          <td class="actions-cell">
+            <button class="btn-edit" (click)="openModal('edit', d)">Edit</button>
+            <button class="btn-delete" (click)="openModal('delete', d)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pop-up Modal -->
+  <div class="modal-overlay" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3 class="shining-title">{{ modalType === 'add' ? 'Add New' : modalType === 'edit' ? 'Edit' : 'Delete' }} Doctor</h3>
+      
+      <div *ngIf="modalType !== 'delete'" class="modal-form">
+        <div class="form-group">
+          <label>Doctor Name</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedDoctor.doctor_name">
+        </div>
+        <div class="form-group">
+          <label>Hospital Name</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedDoctor.hospital_name">
+        </div>
+        <div class="form-group">
+          <label>Hospital Address</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedDoctor.hospital_address">
+        </div>
+      </div>
+
+      <div *ngIf="modalType === 'delete'" class="delete-confirm">
+        <p>Are you sure you want to delete <strong>{{ selectedDoctor.doctor_name }}</strong>?</p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button [class.btn-delete]="modalType === 'delete'" class="btn-add" (click)="handleModalSubmit()">
+          {{ modalType === 'delete' ? 'Delete' : 'Save' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

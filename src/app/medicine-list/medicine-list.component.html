@@ -1,0 +1,76 @@
+<div class="medicine-list-container">
+  <div class="header-actions">
+    <h2 class="shining-title">Medicine Management</h2>
+    <button class="btn-add-main" (click)="openModal('add')">+ Add New Medicine</button>
+  </div>
+  
+  <div *ngIf="loading" class="status-message">Loading medicines...</div>
+  <div *ngIf="error" class="status-message error-message">{{ error }}</div>
+
+  <div class="search-container" *ngIf="!loading && !error">
+    <input class="glow-input search-bar" type="text" [(ngModel)]="searchQuery" (input)="fetchMedicines()" placeholder="Search medicines...">
+  </div>
+
+  <div class="table-wrapper" *ngIf="!loading && !error">
+    <table class="shining-table">
+      <thead>
+        <tr>
+          <th>Medicine Name</th>
+          <th>Brand/Company</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Edit/Delete Medicine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let m of medicines">
+          <td>{{ m.name }}</td>
+          <td>{{ m.brand }}</td>
+          <td>${{ m.price }}</td>
+          <td><span class="badge" [class.low-stock]="m.stock < 10">{{ m.stock }}</span></td>
+          <td class="actions-cell">
+            <button class="btn-edit" (click)="openModal('edit', m)">Edit</button>
+            <button class="btn-delete" (click)="openModal('delete', m)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pop-up Modal -->
+  <div class="modal-overlay" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3 class="shining-title">{{ modalType === 'add' ? 'Add New' : modalType === 'edit' ? 'Edit' : 'Delete' }} Medicine</h3>
+      
+      <div *ngIf="modalType !== 'delete'" class="modal-form">
+        <div class="form-group">
+          <label>Medicine Name</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedMedicine.name">
+        </div>
+        <div class="form-group">
+          <label>Brand/Company</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedMedicine.brand">
+        </div>
+        <div class="form-group">
+          <label>Price</label>
+          <input class="glow-input" type="number" [(ngModel)]="selectedMedicine.price">
+        </div>
+        <div class="form-group">
+          <label>Stock Quantity</label>
+          <input class="glow-input" type="number" [(ngModel)]="selectedMedicine.stock">
+        </div>
+      </div>
+
+      <div *ngIf="modalType === 'delete'" class="delete-confirm">
+        <p>Are you sure you want to delete <strong>{{ selectedMedicine.name }}</strong>?</p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button [class.btn-delete]="modalType === 'delete'" class="btn-add" (click)="handleModalSubmit()">
+          {{ modalType === 'delete' ? 'Delete' : 'Save' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

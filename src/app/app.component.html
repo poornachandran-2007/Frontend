@@ -1,0 +1,20 @@
+<div class="app-container" (click)="closeAll()">
+  <nav class="shining-navbar">
+    <ul class="nav-links">
+      <li class="dropdown" *ngFor="let nav of navigations">
+        <a style="cursor: pointer" class="glow-link" (click)="toggleDropdown(nav, $event)">
+          {{ nav.title }}
+        </a>
+        <div class="dropdown-content" [class.show]="nav.isOpen">
+          <a style="cursor: pointer" *ngFor="let item of nav.items" class="dropdown-item" (click)="onItemClick(item, $event)">
+            {{ item }}
+          </a>
+        </div>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

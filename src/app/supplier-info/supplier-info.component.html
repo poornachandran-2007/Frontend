@@ -1,0 +1,96 @@
+<div class="supplier-info-container">
+  <div class="header-actions">
+    <h2 class="shining-title">Supplier Information</h2>
+    <button class="btn-add-main" (click)="openModal('add')">+ Add New Supplier</button>
+  </div>
+  
+  <div *ngIf="loading" class="status-message">Loading supplier data...</div>
+  <div *ngIf="error" class="status-message error-message">{{ error }}</div>
+
+  <div class="search-container" *ngIf="!loading && !error">
+    <input class="glow-input search-bar" type="text" [(ngModel)]="searchQuery" (input)="fetchSuppliers()" placeholder="Search by name...">
+  </div>
+
+  <div class="table-wrapper" *ngIf="!loading && !error">
+    <table class="shining-table">
+      <thead>
+        <tr>
+          <th>Supplier Name</th>
+          <th>Company Name</th>
+          <th>Agent Name</th>
+          <th>Address</th>
+          <th>Phone</th>
+          <th>GST Number</th>
+          <th>Edit/Delete Supplier</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of suppliers">
+          <td>{{ s.supplier_name }}</td>
+          <td>{{ s.company_name }}</td>
+          <td>{{ s.agent_name }}</td>
+          <td>{{ s.address }}</td>
+          <td>{{ s.phone }}</td>
+          <td><span class="badge">{{ s.gst_number }}</span></td>
+          <td class="actions-cell">
+            <button class="btn-edit" (click)="openModal('edit', s)">Edit</button>
+            <button class="btn-delete" (click)="openModal('delete', s)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pop-up Modal -->
+  <div class="modal-overlay" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3 class="shining-title">{{ modalType === 'add' ? 'Add New' : modalType === 'edit' ? 'Edit' : 'Delete' }} Supplier</h3>
+      
+      <div *ngIf="modalType !== 'delete'" class="modal-form">
+        <div class="form-group">
+          <label>Supplier Name</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedSupplier.supplier_name">
+        </div>
+        <div class="form-group">
+          <label>Company Name</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedSupplier.company_name">
+        </div>
+        <div class="form-group">
+          <label>Agent Name</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedSupplier.agent_name">
+        </div>
+        <div class="form-group">
+          <label>Address</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedSupplier.address">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedSupplier.phone">
+        </div>
+        <div class="form-group">
+          <label>GST Number</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedSupplier.gst_number">
+        </div>
+        <div class="form-group">
+          <label>HTC Number</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedSupplier.htc_number">
+        </div>
+        <div class="form-group">
+          <label>Drug License Number</label>
+          <input class="glow-input" type="text" [(ngModel)]="selectedSupplier.drug_license_number">
+        </div>
+      </div>
+
+      <div *ngIf="modalType === 'delete'" class="delete-confirm">
+        <p>Are you sure you want to delete <strong>{{ selectedSupplier.supplier_name }}</strong>?</p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button [class.btn-delete]="modalType === 'delete'" class="btn-add" (click)="handleModalSubmit()">
+          {{ modalType === 'delete' ? 'Delete' : 'Save' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
