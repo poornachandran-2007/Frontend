@@ -1,0 +1,77 @@
+<div class="coa-container">
+  <!-- Top header row with title -->
+  <div class="page-header">
+    <h1 class="page-title">Chart of Accounts</h1>
+  </div>
+
+  <!-- 1. Add Account Card -->
+  <section class="glass-card">
+    <h2 class="card-title">Add account (Supplier / Customer / Bank / Expense head)</h2>
+    
+    <div class="form-row">
+      <!-- Name field -->
+      <div class="form-group flex-2">
+        <label class="form-label">Name</label>
+        <input 
+          type="text" 
+          [(ngModel)]="newAccountName" 
+          placeholder="e.g. MedPlus Distributor" 
+          class="form-input">
+      </div>
+
+      <!-- Group dropdown -->
+      <div class="form-group flex-1">
+        <label class="form-label">Group</label>
+        <select [(ngModel)]="newAccountGroup" class="form-select">
+          <option value="Asset">Asset</option>
+          <option value="Liability">Liability</option>
+          <option value="Equity">Equity</option>
+          <option value="Revenue">Revenue</option>
+          <option value="Expense">Expense</option>
+        </select>
+      </div>
+
+      <!-- Is Party Checkbox -->
+      <div class="checkbox-group" (click)="toggleParty()">
+        <div class="custom-checkbox" [class.checked]="isParty">
+          <span class="check-icon" *ngIf="isParty">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+        </div>
+        <span class="checkbox-label">Is party<br>(supplier/customer)</span>
+      </div>
+
+      <!-- Add Button -->
+      <button class="btn-add" (click)="addAccount()">Add</button>
+    </div>
+
+    <!-- Tip text -->
+    <div class="tip-text">
+      Tip: add suppliers as <span class="font-semibold">Liability</span> + party. Customers as <span class="font-semibold">Asset</span> + party. New banks as <span class="font-semibold">Asset</span>.
+    </div>
+  </section>
+
+  <!-- 2. All Accounts Card -->
+  <section class="glass-card">
+    <h2 class="card-title">All accounts ({{ accounts.length }})</h2>
+    
+    <div class="table-responsive">
+      <table class="coa-table">
+        <thead>
+          <tr>
+            <th style="width: 50%;">Name</th>
+            <th style="width: 25%;">Group</th>
+            <th style="width: 25%;">Party</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let acc of accounts">
+            <td class="font-semibold">{{ acc.name }}</td>
+            <td style="color: #475569;">{{ acc.group }}</td>
+            <td class="font-semibold">{{ acc.party ? 'Yes' : '' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

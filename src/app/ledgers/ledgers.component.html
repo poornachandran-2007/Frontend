@@ -1,0 +1,74 @@
+<div class="ledgers-container">
+  <!-- Top header title -->
+  <div class="page-header">
+    <h1 class="page-title">Ledgers</h1>
+  </div>
+
+  <!-- 1. All Ledgers List (when no ledger is selected) -->
+  <section class="glass-card" *ngIf="!selectedLedger">
+    <h2 class="card-title">Open an individual ledger</h2>
+    
+    <div class="table-responsive">
+      <table class="ledger-table">
+        <thead>
+          <tr>
+            <th style="width: 50%;">Account</th>
+            <th style="width: 25%;">Group</th>
+            <th class="text-right" style="width: 25%;">Closing balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of ledgerList" (click)="selectLedger(item)">
+            <td class="font-semibold" style="color: #0f172a;">{{ item.account }}</td>
+            <td style="color: #475569;">{{ item.group }}</td>
+            <td class="text-right font-mono font-semibold">₹{{ item.balance | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 2. Individual Ledger Details View (when a ledger is selected) -->
+  <section class="glass-card" *ngIf="selectedLedger">
+    <div class="detail-header">
+      <div class="detail-title-group">
+        <span class="detail-subtitle">{{ selectedLedger.group }} Ledger</span>
+        <h2 class="card-title" style="margin: 0; font-size: 1.25rem;">{{ selectedLedger.account }} — Statement</h2>
+      </div>
+      <button class="btn-back" (click)="clearSelection()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to All Ledgers
+      </button>
+    </div>
+
+    <!-- Details Table -->
+    <div class="table-responsive" *ngIf="hasTransactions(); else noTransactions">
+      <table class="ledger-table">
+        <thead>
+          <tr>
+            <th style="width: 12%;">Date</th>
+            <th style="width: 15%;">Voucher No.</th>
+            <th style="width: 20%;">Party</th>
+            <th>Particulars (Double Entry Posting)</th>
+            <th class="text-right" style="width: 15%;">Debit (Dr)</th>
+            <th class="text-right" style="width: 15%;">Credit (Cr)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tx of getSelectedLedgerTransactions()" style="cursor: default;">
+            <td>{{ tx.date }}</td>
+            <td class="font-mono">{{ tx.voucher }}</td>
+            <td>{{ tx.party }}</td>
+            <td class="font-semibold">{{ tx.particulars }}</td>
+            <td class="text-right font-mono" style="color: #0f172a;">{{ tx.debit ? '₹' + (tx.debit | number:'1.2-2') : '' }}</td>
+            <td class="text-right font-mono" style="color: #0f172a;">{{ tx.credit ? '₹' + (tx.credit | number:'1.2-2') : '' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #noTransactions>
+      <div class="empty-tx-placeholder">No transaction entries found for this ledger.</div>
+    </ng-template>
+  </section>
+</div>

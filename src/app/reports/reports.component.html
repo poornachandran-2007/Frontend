@@ -1,0 +1,110 @@
+<div class="reports-container">
+  <!-- Top header title -->
+  <div class="page-header">
+    <h1 class="page-title">Reports (Dr/Cr)</h1>
+  </div>
+
+  <!-- 1. Overall Summary Card -->
+  <section class="glass-card">
+    <h2 class="section-title">Overall — by voucher type</h2>
+    <div class="table-responsive">
+      <table class="reports-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th class="text-center" style="width: 20%;">Vouchers</th>
+            <th class="text-right" style="width: 25%;">Debit</th>
+            <th class="text-right" style="width: 25%;">Credit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let summary of overallSummary">
+            <td class="font-bold">{{ summary.type }}</td>
+            <td class="text-center font-mono">{{ summary.vouchers }}</td>
+            <td class="text-right font-mono">{{ summary.debit > 0 ? (summary.debit | number:'1.2-2') : '0.00' }}</td>
+            <td class="text-right font-mono">{{ summary.credit > 0 ? (summary.credit | number:'1.2-2') : '0.00' }}</td>
+          </tr>
+          <!-- Grand Total row -->
+          <tr class="grand-total-row">
+            <td class="font-bold">Grand Total</td>
+            <td class="text-center font-bold font-mono">{{ totalVouchers }}</td>
+            <td class="text-right font-bold font-mono">{{ grandTotalDebit | number:'1.2-2' }}</td>
+            <td class="text-right font-bold font-mono">{{ grandTotalCredit | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Green book tally label -->
+    <div class="tally-banner" *ngIf="grandTotalDebit === grandTotalCredit">
+      <span>✓ Books are tallied — total Debit equals total Credit.</span>
+    </div>
+  </section>
+
+  <!-- 2. Horizontal Navigation Pills -->
+  <div class="reports-tabs-nav">
+    <div class="tabs-scroll-container">
+      <button 
+        *ngFor="let tab of tabs" 
+        class="tab-pill" 
+        [class.active]="activeTab === tab.id"
+        (click)="selectTab(tab.id)">
+        {{ tab.label }}
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. Account Totals Card -->
+  <section class="glass-card">
+    <h2 class="section-title">{{ getActiveTabLabel() }} — account totals</h2>
+    
+    <div *ngIf="hasTotals(); else noTotals" class="account-totals-grid">
+      <div class="account-total-card" *ngFor="let acc of getActiveTabTotals()">
+        <span class="account-name">{{ acc.account }}</span>
+        <span class="account-val font-mono" [class.val-debit]="acc.type === 'Debit'" [class.val-credit]="acc.type === 'Credit'">
+          {{ acc.total | number:'1.2-2' }} {{ acc.type === 'Debit' ? 'Dr' : 'Cr' }}
+        </span>
+      </div>
+    </div>
+
+    <ng-template #noTotals>
+      <div class="no-entries-placeholder">No entries yet.</div>
+    </ng-template>
+  </section>
+
+  <!-- 4. Entries Details Card -->
+  <section class="glass-card">
+    <h2 class="section-title">{{ getActiveTabLabel() }} — entries</h2>
+
+    <div class="table-responsive" *ngIf="hasEntries(); else noEntries">
+      <table class="reports-table">
+        <thead>
+          <tr>
+            <th style="width: 12%;">Date</th>
+            <th style="width: 15%;">Voucher</th>
+            <th style="width: 18%;">Party</th>
+            <th style="width: 20%;">Account</th>
+            <th>Narration</th>
+            <th class="text-right" style="width: 13%;">Debit</th>
+            <th class="text-right" style="width: 13%;">Credit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let entry of getActiveTabEntries()">
+            <td>{{ entry.date }}</td>
+            <td class="font-mono">{{ entry.voucher }}</td>
+            <td>{{ entry.party }}</td>
+            <td class="font-bold">{{ entry.account }}</td>
+            <td style="color: #64748b; font-style: italic;">{{ entry.narration || '-' }}</td>
+            <td class="text-right font-mono">{{ entry.debit ? (entry.debit | number:'1.2-2') : '' }}</td>
+            <td class="text-right font-mono">{{ entry.credit ? (entry.credit | number:'1.2-2') : '' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #noEntries>
+      <div class="no-entries-placeholder">No entries.</div>
+    </ng-template>
+  </section>
+</div>

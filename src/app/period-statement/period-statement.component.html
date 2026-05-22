@@ -1,0 +1,77 @@
+<div class="period-statement-container">
+  <h1 class="page-title">Period Statement (All accounts)</h1>
+
+  <!-- Date Range Card -->
+  <div class="card date-card">
+    <h2 class="card-title">Date range</h2>
+    <div class="date-controls">
+      <div class="date-input-group">
+        <label>From</label>
+        <input type="date" class="date-input" [(ngModel)]="fromDate">
+      </div>
+      <div class="date-input-group">
+        <label>To</label>
+        <input type="date" class="date-input" [(ngModel)]="toDate">
+      </div>
+      <div class="btn-group">
+        <button class="btn-outline" (click)="setThisMonth()">This month</button>
+        <button class="btn-outline" (click)="setThisFY()">This FY</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Card -->
+  <div class="card data-card">
+    <h2 class="card-title">Opening · Period · Closing — {{ fromDate }} to {{ toDate }}</h2>
+    
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Account</th>
+            <th>Group</th>
+            <th class="align-right">Opening Dr</th>
+            <th class="align-right">Opening Cr</th>
+            <th class="align-right">Period Dr</th>
+            <th class="align-right">Period Cr</th>
+            <th class="align-right">Closing Dr</th>
+            <th class="align-right">Closing Cr</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Dynamic Rows -->
+          <tr *ngFor="let account of accounts">
+            <td><a href="#" class="account-link">{{ account.name }}</a></td>
+            <td>{{ account.group }}</td>
+            <td class="align-right">{{ account.openingDr | number:'1.2-2' }}</td>
+            <td class="align-right">{{ account.openingCr | number:'1.2-2' }}</td>
+            <td class="align-right">{{ account.periodDr | number:'1.2-2' }}</td>
+            <td class="align-right">{{ account.periodCr | number:'1.2-2' }}</td>
+            <td class="align-right">{{ account.closingDr | number:'1.2-2' }}</td>
+            <td class="align-right">{{ account.closingCr | number:'1.2-2' }}</td>
+          </tr>
+          
+          <!-- Totals Row -->
+          <tr class="totals-row">
+            <td>Totals</td>
+            <td></td>
+            <td class="align-right">{{ totalOpeningDr | number:'1.2-2' }}</td>
+            <td class="align-right">{{ totalOpeningCr | number:'1.2-2' }}</td>
+            <td class="align-right">{{ totalPeriodDr | number:'1.2-2' }}</td>
+            <td class="align-right">{{ totalPeriodCr | number:'1.2-2' }}</td>
+            <td class="align-right">{{ totalClosingDr | number:'1.2-2' }}</td>
+            <td class="align-right">{{ totalClosingCr | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer-info">
+      <p class="tip-text">Tip: click any account name to open its date-range ledger with running balance.</p>
+      <p class="tally-text" *ngIf="isTally">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Period movements tally (Dr = Cr).
+      </p>
+    </div>
+  </div>
+</div>

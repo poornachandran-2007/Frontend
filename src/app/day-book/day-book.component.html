@@ -1,0 +1,686 @@
+<div class="daybook-container animate-fade-in">
+  <!-- Header section matching screenshots -->
+  <header class="page-header">
+    <button class="back-btn" (click)="goToDashboard()" title="Back to Dashboard">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="back-arrow-icon"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <span>Day Book</span>
+    </button>
+    <h1 class="page-title">New {{ getActiveTabLabel() }}</h1>
+  </header>
+
+  <!-- Navigation tabs matching screenshots -->
+  <nav class="voucher-tabs-nav">
+    <div class="tabs-scroll-container">
+      <button 
+        *ngFor="let tab of tabs" 
+        class="tab-pill" 
+        [class.active]="activeTab === tab.id"
+        (click)="selectTab(tab.id)">
+        {{ tab.label }}
+      </button>
+    </div>
+  </nav>
+
+  <!-- Voucher details card -->
+  <section class="glass-card voucher-details-card">
+    <h2 class="section-title">Voucher details</h2>
+    
+    <!-- Base Voucher Info (Date, No, Narration) -->
+    <div class="form-grid">
+      <!-- Date input -->
+      <div class="form-group">
+        <label for="voucher-date">Date</label>
+        <div class="input-with-icon">
+          <input 
+            type="date" 
+            id="voucher-date" 
+            [(ngModel)]="voucherDate"
+            class="form-input">
+        </div>
+      </div>
+
+      <!-- Voucher Number -->
+      <div class="form-group">
+        <label for="voucher-no">Voucher No.</label>
+        <input 
+          type="text" 
+          id="voucher-no" 
+          [(ngModel)]="voucherNo"
+          class="form-input font-mono highlight-text">
+      </div>
+
+      <!-- Narration -->
+      <div class="form-group narration-group">
+        <label for="narration">Narration</label>
+        <input 
+          type="text" 
+          id="narration" 
+          [(ngModel)]="narration"
+          placeholder="Optional remarks"
+          class="form-input">
+      </div>
+    </div>
+
+    <!-- DYNAMIC FORM PARTIES AND VALUES BY TAB TYPE -->
+    
+    <!-- 1. SALES / SALES RETURN FORM -->
+    <div class="dynamic-form-row" *ngIf="['sales', 'sales-return'].includes(activeTab)">
+      <!-- Customer selector -->
+      <div class="form-group flex-1">
+        <div class="form-label-row">
+          <label>Customer</label>
+          <button class="add-new-btn-small" (click)="openAddCustomer()">+ New</button>
+        </div>
+        <select [(ngModel)]="selectedCustomerId" class="form-select">
+          <option value="">Cash sale (leave empty)</option>
+          <option *ngFor="let customer of customersDb" [value]="customer.id">{{ customer.name }}</option>
+        </select>
+      </div>
+      <!-- Mode select -->
+      <div class="form-group mode-select-width">
+        <label>Mode</label>
+        <select [(ngModel)]="receiptMode" class="form-select">
+          <option value="Cash">Cash</option>
+          <option value="Bank">Bank</option>
+          <option value="Credit">Credit</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 2. PURCHASE / PURCHASE RETURN FORM -->
+    <div class="dynamic-form-row" *ngIf="['purchase', 'purchase-return'].includes(activeTab)">
+      <!-- Supplier selector -->
+      <div class="form-group flex-1">
+        <div class="form-label-row">
+          <label class="required-label">Supplier *</label>
+          <button class="add-new-btn-small" (click)="openAddSupplier()">+ New</button>
+        </div>
+        <select [(ngModel)]="selectedSupplierId" class="form-select" (change)="calculateTotals()">
+          <option value="" disabled selected>Select party</option>
+          <option *ngFor="let supplier of suppliersDb" [value]="supplier.id">{{ supplier.name }}</option>
+        </select>
+      </div>
+      <!-- Mode select -->
+      <div class="form-group mode-select-width">
+        <label>Mode</label>
+        <select [(ngModel)]="paymentMode" class="form-select">
+          <option value="Cash">Cash</option>
+          <option value="Bank">Bank</option>
+          <option value="Credit">Credit</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 3. RECEIPT FORM -->
+    <div *ngIf="activeTab === 'receipt'">
+      <!-- Party and Mode Row -->
+      <div class="dynamic-form-row">
+        <!-- Customer selector -->
+        <div class="form-group flex-1">
+          <div class="form-label-row">
+            <label>Customer</label>
+            <button class="add-new-btn-small" (click)="openAddCustomer()">+ New</button>
+          </div>
+          <select [(ngModel)]="receiptCustomerId" class="form-select">
+            <option value="" disabled selected>Select Customer</option>
+            <option *ngFor="let customer of customersDb" [value]="customer.id">{{ customer.name }}</option>
+          </select>
+        </div>
+        <!-- Supplier selector -->
+        <div class="form-group flex-1">
+          <div class="form-label-row">
+            <label>Supplier</label>
+            <button class="add-new-btn-small" (click)="openAddSupplier()">+ New</button>
+          </div>
+          <select [(ngModel)]="receiptSupplierId" class="form-select">
+            <option value="" disabled selected>Select Supplier</option>
+            <option *ngFor="let supplier of suppliersDb" [value]="supplier.id">{{ supplier.name }}</option>
+          </select>
+        </div>
+        <!-- Mode select -->
+        <div class="form-group mode-select-width">
+          <label>Mode</label>
+          <select [(ngModel)]="receiptMode" class="form-select">
+            <option value="Cash">Cash</option>
+            <option value="Bank">Bank</option>
+          </select>
+        </div>
+      </div>
+      <!-- Amount Row -->
+      <div class="dynamic-amount-row">
+        <div class="form-group amount-field-width">
+          <label class="required-label">Amount (₹) *</label>
+          <input 
+            type="number" 
+            [(ngModel)]="receiptAmount" 
+            placeholder=""
+            class="form-input font-mono">
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. PAYMENT FORM -->
+    <div *ngIf="activeTab === 'payment'">
+      <!-- Party and Mode Row -->
+      <div class="dynamic-form-row">
+        <!-- Customer selector -->
+        <div class="form-group flex-1">
+          <div class="form-label-row">
+            <label>Customer</label>
+            <button class="add-new-btn-small" (click)="openAddCustomer()">+ New</button>
+          </div>
+          <select [(ngModel)]="paymentCustomerId" class="form-select">
+            <option value="" disabled selected>Select Customer</option>
+            <option *ngFor="let customer of customersDb" [value]="customer.id">{{ customer.name }}</option>
+          </select>
+        </div>
+        <!-- Supplier selector -->
+        <div class="form-group flex-1">
+          <div class="form-label-row">
+            <label>Supplier</label>
+            <button class="add-new-btn-small" (click)="openAddSupplier()">+ New</button>
+          </div>
+          <select [(ngModel)]="paymentSupplierId" class="form-select">
+            <option value="" disabled selected>Select Supplier</option>
+            <option *ngFor="let supplier of suppliersDb" [value]="supplier.id">{{ supplier.name }}</option>
+          </select>
+        </div>
+        <!-- Mode select -->
+        <div class="form-group mode-select-width">
+          <label>Mode</label>
+          <select [(ngModel)]="paymentMode" class="form-select">
+            <option value="Cash">Cash</option>
+            <option value="Bank">Bank</option>
+          </select>
+        </div>
+      </div>
+      <!-- Amount Row -->
+      <div class="dynamic-amount-row">
+        <div class="form-group amount-field-width">
+          <label class="required-label">Amount (₹) *</label>
+          <input 
+            type="number" 
+            [(ngModel)]="paymentAmount" 
+            placeholder=""
+            class="form-input font-mono">
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. EXPENSE FORM -->
+    <div *ngIf="activeTab === 'expense'">
+      <!-- Expense head and Mode Row -->
+      <div class="dynamic-form-row">
+        <!-- Expense Head selector -->
+        <div class="form-group flex-1">
+          <label class="required-label">Expense head *</label>
+          <select [(ngModel)]="expenseHead" class="form-select">
+            <option value="" disabled selected>e.g. Rent, Salary, Electricity</option>
+            <option *ngFor="let head of expenseHeadsDb" [value]="head">{{ head }}</option>
+          </select>
+        </div>
+        <!-- Mode select -->
+        <div class="form-group mode-select-width">
+          <label>Mode</label>
+          <select [(ngModel)]="expenseMode" class="form-select">
+            <option value="Cash">Cash</option>
+            <option value="Bank">Bank</option>
+          </select>
+        </div>
+      </div>
+      <!-- Amount Row -->
+      <div class="dynamic-amount-row">
+        <div class="form-group amount-field-width">
+          <label class="required-label">Amount (₹) *</label>
+          <input 
+            type="number" 
+            [(ngModel)]="expenseAmount" 
+            placeholder=""
+            class="form-input font-mono">
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. CONTRA FORM -->
+    <div *ngIf="activeTab === 'contra'">
+      <!-- Direction Row -->
+      <div class="dynamic-form-row">
+        <div class="form-group direction-field-width">
+          <label class="required-label">Direction</label>
+          <select [(ngModel)]="contraDirection" class="form-select">
+            <option value="withdraw">Bank → Cash (withdraw)</option>
+            <option value="deposit">Cash → Bank (deposit)</option>
+          </select>
+        </div>
+      </div>
+      <!-- Amount Row -->
+      <div class="dynamic-amount-row">
+        <div class="form-group amount-field-width">
+          <label class="required-label">Amount (₹) *</label>
+          <input 
+            type="number" 
+            [(ngModel)]="contraAmount" 
+            placeholder=""
+            class="form-input font-mono">
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY CHECKBOX CONTROLS (Only for Sales, SLR, Purchase, PRR) -->
+    <div class="checkbox-controls-row" *ngIf="['sales', 'sales-return', 'purchase', 'purchase-return'].includes(activeTab)">
+      <label class="custom-checkbox">
+        <input type="checkbox" [(ngModel)]="isItemized">
+        <span class="checkmark"></span>
+        <span class="label-text">Itemized (medicines)</span>
+      </label>
+
+      <label class="custom-checkbox">
+        <input type="checkbox" [(ngModel)]="isGstApplicable" (change)="calculateTotals()">
+        <span class="checkmark"></span>
+        <span class="label-text">GST applicable</span>
+      </label>
+    </div>
+
+    <!-- 7. INVENTORY MEDICINES TABLE SECTION -->
+    <div class="table-outer-wrapper" *ngIf="['sales', 'sales-return', 'purchase', 'purchase-return'].includes(activeTab) && isItemized">
+      <div class="table-responsive">
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th style="width: 25%">Medicine</th>
+              <th style="width: 12%">Batch</th>
+              <th style="width: 12%">Expiry</th>
+              <th style="width: 10%">HSN</th>
+              <th style="width: 8%">Qty</th>
+              <th style="width: 10%">Rate</th>
+              <th style="width: 8%">Disc%</th>
+              <th style="width: 8%" *ngIf="isGstApplicable">GST%</th>
+              <th style="width: 12%" class="text-right">Amount</th>
+              <th style="width: 5%"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of items; let idx = index" class="item-row">
+              <!-- Medicine autocomplete search -->
+              <td class="relative-cell">
+                <input 
+                  type="text" 
+                  [(ngModel)]="item.medicineName"
+                  placeholder="Medicine"
+                  (focus)="openMedDropdown(idx)"
+                  (blur)="closeMedDropdown()"
+                  (input)="medSearchQuery = item.medicineName"
+                  class="table-input med-search-input">
+                
+                <!-- Autocomplete dropdown menu -->
+                <div class="autocomplete-menu" *ngIf="activeMedDropdownIndex === idx">
+                  <div 
+                    *ngFor="let med of getFilteredMedicines(medSearchQuery)" 
+                    class="autocomplete-item"
+                    (mousedown)="selectMedicine(idx, med)">
+                    <span class="autocomplete-med-name">{{ med.name }}</span>
+                    <span class="autocomplete-med-meta">HSN: {{ med.defaultHsn }} | GST: {{ med.defaultGst }}%</span>
+                  </div>
+                  <div *ngIf="getFilteredMedicines(medSearchQuery).length === 0" class="autocomplete-empty">
+                    No medicines found
+                  </div>
+                </div>
+              </td>
+
+              <!-- Batch -->
+              <td>
+                <input type="text" [(ngModel)]="item.batch" placeholder="Batch" class="table-input font-mono">
+              </td>
+
+              <!-- Expiry -->
+              <td>
+                <input type="text" [(ngModel)]="item.expiry" placeholder="Expiry" class="table-input font-mono">
+              </td>
+
+              <!-- HSN -->
+              <td>
+                <input type="text" [(ngModel)]="item.hsn" placeholder="HSN" class="table-input font-mono">
+              </td>
+
+              <!-- Qty -->
+              <td>
+                <input 
+                  type="number" 
+                  [(ngModel)]="item.qty" 
+                  min="1" 
+                  (input)="calculateRowAmount(idx)" 
+                  class="table-input text-center">
+              </td>
+
+              <!-- Rate -->
+              <td>
+                <input 
+                  type="number" 
+                  [(ngModel)]="item.rate" 
+                  placeholder="Rate" 
+                  (input)="calculateRowAmount(idx)" 
+                  class="table-input text-right font-mono">
+              </td>
+
+              <!-- Disc% -->
+              <td>
+                <input 
+                  type="number" 
+                  [(ngModel)]="item.discPercent" 
+                  min="0" 
+                  max="100" 
+                  (input)="calculateRowAmount(idx)" 
+                  class="table-input text-center">
+              </td>
+
+              <!-- GST% -->
+              <td *ngIf="isGstApplicable">
+                <input 
+                  type="number" 
+                  [(ngModel)]="item.gstPercent" 
+                  min="0" 
+                  (input)="calculateRowAmount(idx)" 
+                  class="table-input text-center">
+              </td>
+
+              <!-- Amount display -->
+              <td class="text-right val-amount font-mono">
+                {{ item.amount | number:'1.2-2' }}
+              </td>
+
+              <!-- Delete button -->
+              <td class="text-center">
+                <button class="delete-row-btn" (click)="removeItem(idx)" title="Remove item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="trash-icon"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Add item button -->
+      <div class="table-actions">
+        <button class="add-medicine-btn" (click)="addItem()">
+          <span class="plus-icon-med">+</span> Add medicine
+        </button>
+      </div>
+
+      <!-- Summary panel matching screenshots exactly -->
+      <div class="voucher-summary-panel">
+        <div class="summary-box">
+          <span class="summary-label">Taxable:</span>
+          <span class="summary-val font-mono">₹{{ taxableTotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="summary-box" *ngIf="isGstApplicable">
+          <span class="summary-label">GST:</span>
+          <span class="summary-val font-mono">₹{{ gstTotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="summary-box grand-total-box">
+          <span class="summary-label">Total:</span>
+          <span class="summary-val font-mono">₹{{ grandTotal | number:'1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Non-itemized inventory row -->
+    <div class="non-itemized-fields" *ngIf="['sales', 'sales-return', 'purchase', 'purchase-return'].includes(activeTab) && !isItemized">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Total Taxable Amount</label>
+          <input 
+            type="number" 
+            [(ngModel)]="taxableTotal" 
+            (input)="calculateTotals()" 
+            class="form-input font-mono">
+        </div>
+        <div class="form-group" *ngIf="isGstApplicable">
+          <label>Total GST Amount</label>
+          <input 
+            type="number" 
+            [(ngModel)]="gstTotal" 
+            (input)="calculateTotals()" 
+            class="form-input font-mono">
+        </div>
+        <div class="form-group">
+          <label>Grand Total</label>
+          <input 
+            type="number" 
+            [ngModel]="taxableTotal + gstTotal" 
+            readonly 
+            class="form-input font-mono read-only-input">
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. JOURNAL LINES TABLE (Only for Journal activeTab) -->
+    <div class="journal-lines-container" *ngIf="activeTab === 'journal'">
+      <h3 class="lines-subheader">Lines</h3>
+      <div class="journal-line-row" *ngFor="let line of journalLines; let idx = index">
+        <!-- Account select -->
+        <div class="form-group flex-1">
+          <select [(ngModel)]="line.account" class="form-select select-journal-account">
+            <option value="" disabled selected>Account</option>
+            <option *ngFor="let acc of generalAccountsDb" [value]="acc">{{ acc }}</option>
+          </select>
+        </div>
+        <!-- Debit input -->
+        <div class="form-group journal-input-width">
+          <input 
+            type="number" 
+            [(ngModel)]="line.debit" 
+            placeholder="Debit" 
+            class="form-input text-right font-mono" 
+            (input)="line.credit = null">
+        </div>
+        <!-- Credit input -->
+        <div class="form-group journal-input-width">
+          <input 
+            type="number" 
+            [(ngModel)]="line.credit" 
+            placeholder="Credit" 
+            class="form-input text-right font-mono" 
+            (input)="line.debit = null">
+        </div>
+        <!-- Delete button -->
+        <button class="delete-row-btn margin-top-delete" (click)="removeJournalLine(idx)" title="Remove line">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="trash-icon"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        </button>
+      </div>
+
+      <!-- Add line button -->
+      <div class="table-actions">
+        <button class="add-medicine-btn" (click)="addJournalLine()">
+          <span class="plus-icon-med">+</span> Add line
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Double entry ledger posting preview (Common to all tabs) -->
+  <section class="glass-card posting-preview-card">
+    <h2 class="section-title flex-align-center">
+      Posting preview (Double-entry)
+    </h2>
+
+    <div class="posting-preview-container">
+      <!-- Live Double Entry Table -->
+      <div class="table-responsive" *ngIf="doubleEntryLines.length > 0; else noPreview">
+        <table class="preview-ledger-table">
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th class="text-right">Debit</th>
+              <th class="text-right">Credit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let line of doubleEntryLines" class="ledger-row">
+              <td class="ledger-account" [class.credit-account]="line.type === 'Credit'">
+                {{ line.account }}
+              </td>
+              <td class="text-right val-debit font-mono">
+                {{ line.type === 'Debit' ? (line.amount && line.amount > 0 ? (line.amount | number:'1.2-2') : '') : '' }}
+              </td>
+              <td class="text-right val-credit font-mono">
+                {{ line.type === 'Credit' ? (line.amount && line.amount > 0 ? (line.amount | number:'1.2-2') : '') : '' }}
+              </td>
+            </tr>
+            <!-- Journal or Voucher Totals row -->
+            <tr class="ledger-totals-row">
+              <td class="totals-label font-bold">Totals</td>
+              <td class="text-right font-mono font-bold">
+                {{ (activeTab === 'journal' ? journalDebitTotal : (activeTab === 'contra' ? (contraAmount || 0) : (doubleEntryLines[0]?.type === 'Debit' ? (doubleEntryLines[0]?.amount || 0) : ((doubleEntryLines[0]?.amount || 0) + (gstTotal || 0))) ) ) | number:'1.2-2' }}
+              </td>
+              <td class="text-right font-mono font-bold">
+                {{ (activeTab === 'journal' ? journalCreditTotal : (activeTab === 'contra' ? (contraAmount || 0) : (doubleEntryLines[0]?.type === 'Debit' ? (doubleEntryLines[0]?.amount || 0) : ((doubleEntryLines[0]?.amount || 0) + (gstTotal || 0))) ) ) | number:'1.2-2' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Live unbalanced/empty instructions placeholder -->
+      <ng-template #noPreview>
+        <div class="no-preview-placeholder">
+          <!-- Text warning matches screenshot red instruction -->
+          <p class="red-warning-text">
+            {{ activeTab === 'journal' ? journalErrorMessage : 'Fill in required fields (party / expense head / amount or items) to build the entry.' }}
+          </p>
+        </div>
+      </ng-template>
+
+      <!-- Balanced check, if journal is balanced but still showing doubleEntryLines placeholder, we show errors -->
+      <div class="error-message-row" *ngIf="activeTab === 'journal' && journalErrorMessage && doubleEntryLines.length > 0">
+        <p class="red-warning-text">{{ journalErrorMessage }}</p>
+      </div>
+
+      <!-- Contra unbalanced warning left-aligned under the table -->
+      <div class="error-message-row" *ngIf="activeTab === 'contra' && (!contraAmount || contraAmount === 0)" style="text-align: left; margin-top: 8px;">
+        <p class="red-warning-text" style="text-align: left; padding-left: 16px;">Voucher not balanced. Difference: ₹0.00.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dynamic Actions footer matching screenshots -->
+  <div class="form-actions-footer">
+    <button class="action-btn btn-primary" [disabled]="!isSaveEnabled()" (click)="saveVoucher()">
+      Save voucher
+    </button>
+    <button class="action-btn btn-secondary" (click)="resetVoucher()">
+      Cancel
+    </button>
+  </div>
+</div>
+
+<!-- ================= MODALS & TOASTS ================= -->
+
+<!-- Add new supplier modal -->
+<div class="modal-overlay animate-fade-in" *ngIf="showSupplierModal">
+  <div class="modal-card animate-zoom-in">
+    <div class="modal-header">
+      <h3>Create New Supplier</h3>
+      <button class="modal-close-btn" (click)="closeAddSupplier()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="modal-close-icon"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="new-sup-name" class="required-label">Supplier / Party Name *</label>
+        <input 
+          type="text" 
+          id="new-sup-name" 
+          [(ngModel)]="newSupplierName" 
+          placeholder="Enter company or individual name"
+          class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="new-sup-phone">Phone / Contact No.</label>
+        <input 
+          type="text" 
+          id="new-sup-phone" 
+          [(ngModel)]="newSupplierPhone" 
+          placeholder="+91 99999 88888"
+          class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="new-sup-gst">GSTIN Number</label>
+        <input 
+          type="text" 
+          id="new-sup-gst" 
+          [(ngModel)]="newSupplierGst" 
+          placeholder="e.g. 33AABCA1234F1Z0"
+          class="form-input font-mono">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn btn-secondary" (click)="closeAddSupplier()">Cancel</button>
+      <button 
+        class="modal-btn btn-primary" 
+        [disabled]="!newSupplierName.trim()" 
+        (click)="saveSupplier()">
+        Save Party
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add new customer modal -->
+<div class="modal-overlay animate-fade-in" *ngIf="showCustomerModal">
+  <div class="modal-card animate-zoom-in">
+    <div class="modal-header">
+      <h3>Create New Customer</h3>
+      <button class="modal-close-btn" (click)="closeAddCustomer()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="modal-close-icon"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="new-cust-name" class="required-label">Customer Name *</label>
+        <input 
+          type="text" 
+          id="new-cust-name" 
+          [(ngModel)]="newCustomerName" 
+          placeholder="Enter individual name"
+          class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="new-cust-phone">Phone / Contact No.</label>
+        <input 
+          type="text" 
+          id="new-cust-phone" 
+          [(ngModel)]="newCustomerPhone" 
+          placeholder="+91 94444 12345"
+          class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="new-cust-address">Address</label>
+        <input 
+          type="text" 
+          id="new-cust-address" 
+          [(ngModel)]="newCustomerAddress" 
+          placeholder="Enter address details"
+          class="form-input">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn btn-secondary" (click)="closeAddCustomer()">Cancel</button>
+      <button 
+        class="modal-btn btn-primary" 
+        [disabled]="!newCustomerName.trim()" 
+        (click)="saveCustomer()">
+        Save Customer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Local Dynamic Toast Notifications -->
+<div class="toast-notification" [class.show]="toastVisible">
+  <div class="toast-body">
+    <div class="toast-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="9 11 12 14 17 9"></polyline></svg>
+    </div>
+    <div class="toast-message-content">{{ toastMessage }}</div>
+  </div>
+</div>

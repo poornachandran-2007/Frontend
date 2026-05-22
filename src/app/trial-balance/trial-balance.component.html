@@ -1,0 +1,35 @@
+<div class="trial-balance-container">
+  <h1 class="page-title">Trial Balance</h1>
+
+  <div class="card">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Account</th>
+            <th>Group</th>
+            <th class="align-right">Debit</th>
+            <th class="align-right">Credit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Dynamic Rows will go here -->
+          <tr *ngFor="let account of accounts">
+            <td>{{ account.name }}</td>
+            <td>{{ account.group }}</td>
+            <td class="align-right">{{ account.debit | number:'1.2-2' }}</td>
+            <td class="align-right">{{ account.credit | number:'1.2-2' }}</td>
+          </tr>
+          
+          <!-- Totals Row -->
+          <tr class="totals-row">
+            <td>Totals</td>
+            <td></td>
+            <td class="align-right">{{ totalDebit | number:'1.2-2' }}</td>
+            <td class="align-right">{{ totalCredit | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
