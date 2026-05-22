@@ -1,4 +1,4 @@
-.outstanding-container {
+.cheques-container {
   padding: 10px 20px;
   max-width: 1200px;
   animation: fadeIn 0.4s ease-out;
@@ -21,7 +21,6 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 24px;
-  margin-bottom: 24px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.02);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -58,7 +57,7 @@
   font-weight: 600;
   color: #00ffff;
   font-size: 0.9rem;
-  padding-bottom: 12px;
+  padding-bottom: 16px;
   border-bottom: 1px solid rgba(0, 255, 255, 0.2);
   letter-spacing: 0.5px;
 }
@@ -78,10 +77,6 @@
 
 .data-table tr:last-child td {
   border-bottom: none;
-}
-
-.align-right {
-  text-align: right !important;
 }
 
 .empty-state {

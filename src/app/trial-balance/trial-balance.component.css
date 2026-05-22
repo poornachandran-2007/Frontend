@@ -1,4 +1,4 @@
-.outstanding-container {
+.trial-balance-container {
   padding: 10px 20px;
   max-width: 1200px;
   animation: fadeIn 0.4s ease-out;
@@ -21,7 +21,6 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 24px;
-  margin-bottom: 24px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.02);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -30,18 +29,6 @@
   transform: translateY(-2px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 0 30px rgba(0, 255, 255, 0.05);
   border-color: rgba(0, 255, 255, 0.2);
-}
-
-.card-title {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #e2e8f0;
-  margin-top: 0;
-  margin-bottom: 24px;
-  display: inline-block;
-  border-bottom: 2px solid #0088ff;
-  padding-bottom: 4px;
-  text-shadow: 0 0 8px rgba(226, 232, 240, 0.3);
 }
 
 .table-container {
@@ -58,7 +45,7 @@
   font-weight: 600;
   color: #00ffff;
   font-size: 0.9rem;
-  padding-bottom: 12px;
+  padding-bottom: 16px;
   border-bottom: 1px solid rgba(0, 255, 255, 0.2);
   letter-spacing: 0.5px;
 }
@@ -71,7 +58,7 @@
   transition: background 0.2s ease;
 }
 
-.data-table tr:hover td {
+.data-table tr:not(.totals-row):hover td {
   background: rgba(0, 255, 255, 0.05);
   color: #ffffff;
 }
@@ -84,12 +71,11 @@
   text-align: right !important;
 }
 
-.empty-state {
-  text-align: center !important;
-  color: #64748b;
-  padding: 32px 0 !important;
-  font-size: 0.95rem;
-  font-style: italic;
+.totals-row td {
+  font-weight: 700;
+  color: #00ffff;
+  border-top: 2px solid rgba(0, 255, 255, 0.3);
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
 }
 
 @keyframes fadeIn {

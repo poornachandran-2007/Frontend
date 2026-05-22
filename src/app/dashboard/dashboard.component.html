@@ -1,0 +1,39 @@
+<div class="dashboard-container">
+  <!-- Dashboard Header and Actions -->
+  <header class="dashboard-header">
+    <h1 class="dashboard-title">Dashboard</h1>
+    <div class="quick-actions-bar">
+      <button 
+        *ngFor="let action of quickActions" 
+        [class.btn-navy]="action.primary"
+        [class.btn-light]="!action.primary"
+        (click)="triggerAction(action.tab)"
+        class="action-btn">
+        <span class="plus-icon">+</span> {{ action.label }}
+      </button>
+    </div>
+  </header>
+
+  <!-- Financial Summary Cards -->
+  <div class="metrics-grid">
+    <div class="metric-card" *ngFor="let card of cards">
+      <span class="metric-label">{{ card.label }}</span>
+      <span class="metric-value" [class.negative]="card.isNegative">{{ card.value }}</span>
+    </div>
+  </div>
+
+  <!-- Quick Guide Card -->
+  <div class="quick-guide-card">
+    <h2 class="guide-title">Quick guide</h2>
+    <ul class="guide-list">
+      <li *ngFor="let item of guideItems; let isLast = last">
+        <span *ngIf="!isLast">
+          <strong>{{ item.text }}</strong> {{ item.desc }}
+        </span>
+        <span *ngIf="isLast">
+          {{ item.text }}
+        </span>
+      </li>
+    </ul>
+  </div>
+</div>

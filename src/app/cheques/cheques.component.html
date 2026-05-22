@@ -1,0 +1,38 @@
+<div class="cheques-container">
+  <h1 class="page-title">Cheques</h1>
+
+  <div class="card">
+    <h2 class="card-title">All cheques issued</h2>
+    
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Cheque No.</th>
+            <th>Bank</th>
+            <th>Voucher</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Dynamic Rows -->
+          <tr *ngFor="let cheque of cheques">
+            <td>{{ cheque.date }}</td>
+            <td>{{ cheque.chequeNo }}</td>
+            <td>{{ cheque.bank }}</td>
+            <td>{{ cheque.voucher }}</td>
+            <td>{{ cheque.amount | currency:'INR' }}</td>
+            <td>{{ cheque.status }}</td>
+          </tr>
+          
+          <!-- Empty State -->
+          <tr *ngIf="cheques.length === 0">
+            <td colspan="6" class="empty-state">No cheques issued.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

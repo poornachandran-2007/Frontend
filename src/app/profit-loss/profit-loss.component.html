@@ -1,0 +1,84 @@
+<div class="pl-container">
+  <!-- Top header title with live balance toggler -->
+  <div class="page-header">
+    <h1 class="page-title">Profit & Loss</h1>
+    <button 
+      class="btn-toggle-mode" 
+      [class.active]="isLiveMode"
+      (click)="toggleMode()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+      {{ isLiveMode ? 'Show Zero Demo Balances' : 'Show Live Ledger Balances' }}
+    </button>
+  </div>
+
+  <!-- Two-column Income and Expense section -->
+  <div class="pl-grid">
+    
+    <!-- 1. Income Card -->
+    <section class="glass-card">
+      <h2 class="card-title">Income</h2>
+      <table class="pl-table">
+        <thead>
+          <tr>
+            <th style="width: 60%;">Account</th>
+            <th class="text-right" style="width: 40%;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of incomeItems">
+            <td style="color: #475569;">{{ item.name }}</td>
+            <td class="text-right font-mono font-semibold">
+              {{ (isLiveMode ? item.liveAmount : 0) | number:'1.2-2' }}
+            </td>
+          </tr>
+          <!-- Total Income row -->
+          <tr class="total-row">
+            <td>Total Income</td>
+            <td class="text-right font-mono">
+              {{ getTotalIncome() | number:'1.2-2' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 2. Expense Card -->
+    <section class="glass-card">
+      <h2 class="card-title">Expense</h2>
+      <table class="pl-table">
+        <thead>
+          <tr>
+            <th style="width: 60%;">Account</th>
+            <th class="text-right" style="width: 40%;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of expenseItems">
+            <td style="color: #475569;">{{ item.name }}</td>
+            <td class="text-right font-mono font-semibold">
+              {{ (isLiveMode ? item.liveAmount : 0) | number:'1.2-2' }}
+            </td>
+          </tr>
+          <!-- Total Expense row -->
+          <tr class="total-row">
+            <td>Total Expense</td>
+            <td class="text-right font-mono">
+              {{ getTotalExpense() | number:'1.2-2' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+
+  <!-- 3. Bottom full width Net Profit Card -->
+  <section class="glass-card net-profit-card">
+    <span class="net-profit-label">{{ getNetProfitLabel() }}</span>
+    <span 
+      class="net-profit-val" 
+      [class.net-loss-val]="getNetValue() < 0">
+      ₹{{ getNetValue() | number:'1.2-2' }}
+    </span>
+  </section>
+</div>
